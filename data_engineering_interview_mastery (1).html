@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Engineering Interview Prep Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            accent: '#06b6d4',
+                            purple: '#a855f7',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Global CSS Variables for Theme Support */
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-inset: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+        }
+
+        .dark {
+            --bg-main: #020617;
+            --bg-card: #0f172a;
+            --bg-sidebar: #0f172a;
+            --bg-inset: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            transition: background-color 0.25s ease, color 0.25s ease;
+            /* Anti-source selection protection on non-input UI elements */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Re-enable selection for code blocks and text input elements */
+        code, pre, input, select, textarea, .selectable {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+
+        .bg-custom-card { background-color: var(--bg-card); }
+        .bg-custom-sidebar { background-color: var(--bg-sidebar); }
+        .bg-custom-inset { background-color: var(--bg-inset); }
+        .border-custom { border-color: var(--border-color); }
+        .text-custom-primary { color: var(--text-primary); }
+        .text-custom-secondary { color: var(--text-secondary); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        /* Sidebar Collapse Transitions */
+        #sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-collapsed #sidebar {
+            width: 0px !important;
+            min-width: 0px !important;
+            overflow: hidden;
+            border-right-width: 0px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-custom-card border-b border-custom shadow-sm transition-colors">
+        <div class="w-full px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Left Header: Toggle Sidebar & Brand -->
+            <div class="flex items-center space-x-3">
+                <button id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)" 
+                    class="p-2.5 rounded-xl bg-custom-inset border border-custom text-slate-400 hover:text-cyan-500 hover:border-cyan-500 transition-all flex items-center justify-center focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+
+                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="resetFilters()">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
+                        <i class="fa-solid fa-database text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500 bg-clip-text text-transparent">DataEng<span class="text-custom-primary">Mastery</span></span>
+                        <span class="hidden sm:inline-block text-[10px] bg-cyan-500/10 text-cyan-500 px-2 py-0.5 rounded border border-cyan-500/30 font-semibold ml-1.5 uppercase tracking-wider">Pro Edition</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Search Bar in Navbar -->
+            <div class="flex-1 max-w-xl relative hidden md:block">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Search 400+ scenarios, PySpark, AWS, Delta Lake, Accenture..." 
+                    class="w-full bg-custom-inset border border-custom rounded-xl pl-10 pr-10 py-2 text-sm text-custom-primary placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                <button id="clearSearch" onclick="clearSearchInput()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-custom-primary">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Right Controls & Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Protection Shield Indicator Badge -->
+                <div class="hidden lg:flex items-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 px-2.5 py-1 rounded-xl text-xs font-bold" title="Client-Side Source Shield Active">
+                    <i class="fa-solid fa-shield-halved mr-1.5"></i>
+                    <span>Protected Mode</span>
+                </div>
+
+                <!-- Interactive Code Inspector Modal Trigger -->
+                <button onclick="openInspectorModal()" title="Open Interactive Code Inspector" class="p-2.5 rounded-xl bg-custom-inset border border-custom text-slate-400 hover:text-cyan-500 transition-all focus:outline-none">
+                    <i class="fa-solid fa-code text-lg"></i>
+                </button>
+
+                <!-- Theme Toggle Button -->
+                <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme" class="p-2.5 rounded-xl bg-custom-inset border border-custom text-slate-400 hover:text-amber-400 transition-all focus:outline-none">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+
+                <!-- Solved & Bookmarked Tracker Badges -->
+                <div class="hidden xl:flex items-center bg-custom-inset px-3 py-1.5 rounded-xl border border-custom text-xs space-x-3 font-medium">
+                    <div title="Mastered Questions">
+                        <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>
+                        <span id="headerMasteredCount" class="font-bold text-custom-primary">0</span> Solved
+                    </div>
+                    <div class="h-3 w-[1px] bg-slate-400/30"></div>
+                    <div title="Saved Bookmarks">
+                        <i class="fa-solid fa-bookmark text-amber-500 mr-1"></i>
+                        <span id="headerBookmarkCount" class="font-bold text-custom-primary">0</span> Saved
+                    </div>
+                </div>
+
+                <!-- Registration Trigger Button -->
+                <button onclick="openModal()" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition-all shadow-md shadow-cyan-500/20 flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span class="hidden xs:inline">Register / Bootcamps</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Search Row -->
+        <div class="p-2 border-t border-custom md:hidden bg-custom-card px-4">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="mobileSearchInput" placeholder="Search scenarios..." 
+                    class="w-full bg-custom-inset border border-custom rounded-lg pl-10 pr-4 py-1.5 text-sm text-custom-primary focus:outline-none focus:border-cyan-500">
+            </div>
+        </div>
+    </header>
+
+    <!-- App Main Layout Container -->
+    <div id="app-layout" class="flex-1 w-full flex overflow-hidden relative">
+
+        <!-- Left Sidebar Navigation -->
+        <aside id="sidebar" class="w-72 bg-custom-sidebar border-r border-custom flex-shrink-0 flex flex-col z-30 fixed inset-y-0 left-0 pt-16 lg:pt-0 lg:static shadow-2xl lg:shadow-none -translate-x-full lg:translate-x-0">
+            
+            <!-- Sidebar Header & Category Quick Filter Search -->
+            <div class="p-3 border-b border-custom space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders text-cyan-500"></i>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-custom-primary">Domain Explorer</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetFilters()" title="Reset All Filters" class="text-xs text-cyan-500 hover:underline font-semibold">Reset</button>
+                        <button onclick="toggleSidebar()" title="Collapse Sidebar" class="text-slate-400 hover:text-custom-primary p-1">
+                            <i class="fa-solid fa-xmark text-base"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Category In-Sidebar Filter Search -->
+                <div class="relative">
+                    <i class="fa-solid fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="sidebarCategorySearch" oninput="filterSidebarCategories(this.value)" placeholder="Filter categories..." 
+                        class="w-full bg-custom-inset border border-custom rounded-lg pl-8 pr-3 py-1 text-xs text-custom-primary focus:outline-none focus:border-cyan-500">
+                </div>
+            </div>
+
+            <!-- Navigation Scroll Container -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-6">
+                
+                <!-- Special Filter Buttons -->
+                <div class="space-y-1">
+                    <button onclick="filterBySpecial('all')" id="filter-all" class="sidebar-btn active w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <span class="flex items-center space-x-2.5">
+                            <i class="fa-solid fa-layer-group text-cyan-500 w-4"></i>
+                            <span>All Scenarios</span>
+                        </span>
+                        <span id="badge-all-count" class="bg-custom-inset text-custom-secondary px-2 py-0.5 rounded-full text-xs font-mono font-bold">0</span>
+                    </button>
+                    <button onclick="filterBySpecial('bookmarked')" id="filter-bookmarked" class="sidebar-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-custom-secondary hover:bg-custom-inset transition-colors">
+                        <span class="flex items-center space-x-2.5">
+                            <i class="fa-solid fa-bookmark text-amber-500 w-4"></i>
+                            <span>Bookmarked</span>
+                        </span>
+                        <span id="badge-bookmark-count" class="bg-custom-inset text-amber-500 px-2 py-0.5 rounded-full text-xs font-mono font-bold">0</span>
+                    </button>
+                    <button onclick="filterBySpecial('mastered')" id="filter-mastered" class="sidebar-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-custom-secondary hover:bg-custom-inset transition-colors">
+                        <span class="flex items-center space-x-2.5">
+                            <i class="fa-solid fa-circle-check text-emerald-500 w-4"></i>
+                            <span>Mastered</span>
+                        </span>
+                        <span id="badge-mastered-count" class="bg-custom-inset text-emerald-500 px-2 py-0.5 rounded-full text-xs font-mono font-bold">0</span>
+                    </button>
+                </div>
+
+                <!-- Tech Stacks Section -->
+                <div>
+                    <h3 class="px-3 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>Technical Domains</span>
+                        <i class="fa-solid fa-microchip"></i>
+                    </h3>
+                    <div id="techCategoriesList" class="space-y-1"></div>
+                </div>
+
+                <!-- Company Sets Section -->
+                <div>
+                    <h3 class="px-3 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>Company Interview Sets</span>
+                        <i class="fa-solid fa-building"></i>
+                    </h3>
+                    <div id="companyCategoriesList" class="space-y-1"></div>
+                </div>
+
+            </div>
+
+            <!-- Footer Preparation Progress Bar -->
+            <div class="p-4 border-t border-custom bg-custom-inset">
+                <div class="text-xs text-custom-secondary flex justify-between mb-1.5 font-semibold">
+                    <span>Overall Mastery</span>
+                    <span id="progressPercent" class="text-cyan-500 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-300 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-indigo-600 h-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Drawer Backdrop Overlay -->
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-20 hidden lg:hidden backdrop-blur-sm"></div>
+
+        <!-- Main Viewport Content -->
+        <main id="mainContent" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 w-full transition-all duration-300">
+            
+            <!-- Category Banner Header -->
+            <div class="mb-6 bg-custom-card border border-custom rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span id="activeCategoryIcon" class="text-2xl text-cyan-500 bg-custom-inset p-3 rounded-xl border border-custom flex items-center justify-center">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </span>
+                            <div>
+                                <h1 id="activeCategoryTitle" class="text-xl sm:text-2xl font-extrabold text-custom-primary">All Scenario Questions</h1>
+                                <p id="activeCategoryDesc" class="text-xs sm:text-sm text-custom-secondary">Real-time production scenarios with complete logic and code solutions.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Filters -->
+                    <div class="flex items-center space-x-1 sm:space-x-2 bg-custom-inset p-1.5 rounded-xl border border-custom self-start lg:self-auto flex-wrap gap-y-1">
+                        <button onclick="setDifficultyFilter('ALL')" id="diff-ALL" class="diff-btn active px-3 py-1 rounded-lg text-xs font-bold transition-all">All</button>
+                        <button onclick="setDifficultyFilter('Easy')" id="diff-Easy" class="diff-btn px-3 py-1 rounded-lg text-xs font-bold text-emerald-500 hover:bg-custom-card transition-all">Easy</button>
+                        <button onclick="setDifficultyFilter('Medium')" id="diff-Medium" class="diff-btn px-3 py-1 rounded-lg text-xs font-bold text-amber-500 hover:bg-custom-card transition-all">Medium</button>
+                        <button onclick="setDifficultyFilter('Hard')" id="diff-Hard" class="diff-btn px-3 py-1 rounded-lg text-xs font-bold text-rose-500 hover:bg-custom-card transition-all">Hard</button>
+                        <button onclick="setDifficultyFilter('Expert')" id="diff-Expert" class="diff-btn px-3 py-1 rounded-lg text-xs font-bold text-purple-500 hover:bg-custom-card transition-all">Expert</button>
+                    </div>
+                </div>
+
+                <!-- Header Summary Stats -->
+                <div class="mt-4 pt-4 border-t border-custom flex flex-wrap items-center justify-between text-xs text-custom-secondary gap-2">
+                    <div>Showing <strong id="visibleCount" class="text-custom-primary font-bold">0</strong> matching scenarios</div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                        <span>Click <strong class="text-cyan-500">"Reveal Solution"</strong> to inspect logic & production code.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenarios Cards Output Container -->
+            <div id="scenariosContainer" class="space-y-6"></div>
+
+            <!-- Empty Search State -->
+            <div id="emptyState" class="hidden text-center py-16 bg-custom-card rounded-2xl border border-custom p-8">
+                <i class="fa-solid fa-folder-open text-5xl text-slate-400 mb-4"></i>
+                <h3 class="text-lg font-bold text-custom-primary mb-1">No Matching Scenarios Found</h3>
+                <p class="text-sm text-custom-secondary mb-4">Try clearing search terms or selecting a different category from the left pane.</p>
+                <button onclick="resetFilters()" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md">Reset All Filters</button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- User Registration & Newsletter Modal -->
+    <div id="newsletterModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+        <div class="bg-custom-card border border-custom rounded-2xl max-w-md w-full p-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4">
+                <button onclick="closeModal()" class="text-slate-400 hover:text-custom-primary transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xl shadow-lg shadow-cyan-500/30">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-custom-primary">Live Bootcamps & Newsletter</h3>
+                    <p class="text-xs text-custom-secondary">Get weekly DE interview prep & live session alerts</p>
+                </div>
+            </div>
+
+            <form id="registrationForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-custom-primary mb-1">Full Name *</label>
+                    <input type="text" id="regName" required placeholder="Alex Mercer" 
+                        class="w-full bg-custom-inset border border-custom rounded-xl px-3.5 py-2 text-sm text-custom-primary focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-custom-primary mb-1">Email Address *</label>
+                    <input type="email" id="regEmail" required placeholder="alex@company.com" 
+                        class="w-full bg-custom-inset border border-custom rounded-xl px-3.5 py-2 text-sm text-custom-primary focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-custom-primary mb-1">Experience Level</label>
+                    <select id="regExp" class="w-full bg-custom-inset border border-custom rounded-xl px-3.5 py-2 text-sm text-custom-primary focus:outline-none focus:border-cyan-500">
+                        <option value="0-2 Years (Junior / Associate DE)">0-2 Years (Junior / Associate DE)</option>
+                        <option value="3-5 Years (Mid-Level Data Engineer)">3-5 Years (Mid-Level Data Engineer)</option>
+                        <option value="6-9 Years (Senior DE / Lead Architect)">6-9 Years (Senior DE / Lead Architect)</option>
+                        <option value="10+ Years (Principal / Staff DE)">10+ Years (Principal / Staff DE)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-custom-primary mb-1">Primary Interest Area</label>
+                    <select id="regTech" class="w-full bg-custom-inset border border-custom rounded-xl px-3.5 py-2 text-sm text-custom-primary focus:outline-none focus:border-cyan-500">
+                        <option value="PySpark & Big Data Architecture">PySpark & Big Data Architecture</option>
+                        <option value="AWS / Azure / GCP Data Cloud">AWS / Azure / GCP Data Cloud</option>
+                        <option value="Databricks & Delta Lake">Databricks & Delta Lake</option>
+                        <option value="Snowflake & SQL Data Warehousing">Snowflake & SQL Data Warehousing</option>
+                        <option value="Streaming (Kafka / Flink / Redis)">Streaming (Kafka / Flink / Redis)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-cyan-500/20 text-sm transition-all mt-2">
+                    Complete Free Registration
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interactive In-App Code Inspector Modal Widget -->
+    <div id="codeInspectorModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="bg-custom-card border border-custom rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between pb-4 border-b border-custom">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/30 flex items-center justify-center font-mono font-bold text-lg">
+                        &lt;/&gt;
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-custom-primary">In-App Code Inspector & Execution Sandbox</h3>
+                        <p class="text-xs text-custom-secondary">Safely inspect, syntax-test, and analyze pipeline solutions</p>
+                    </div>
+                </div>
+                <button onclick="closeInspectorModal()" class="text-slate-400 hover:text-custom-primary p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Inspector Select Box -->
+            <div class="py-4 space-y-3">
+                <label class="block text-xs font-semibold text-custom-primary">Select Solution Script to Inspect:</label>
+                <select id="inspectorSelect" onchange="loadInspectorScript(this.value)" class="w-full bg-custom-inset border border-custom rounded-xl p-2.5 text-xs text-custom-primary focus:outline-none focus:border-cyan-500 font-mono">
+                </select>
+            </div>
+
+            <!-- Viewer Output Display -->
+            <div class="flex-1 overflow-hidden flex flex-col bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs text-cyan-300 relative">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
+                    <span id="inspectorLangBadge"><i class="fa-solid fa-file-code mr-1"></i>PySpark / SQL</span>
+                    <button id="inspectorCopyBtn" onclick="copyInspectorCode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded border border-slate-700 transition-all">
+                        <i class="fa-regular fa-copy mr-1"></i>Copy
+                    </button>
+                </div>
+                <pre class="flex-1 overflow-auto"><code id="inspectorCodeContent" class="selectable">-- Select a solution scenario above to inspect...</code></pre>
+            </div>
+
+            <div class="pt-4 flex items-center justify-between text-xs text-custom-secondary">
+                <span class="flex items-center"><i class="fa-solid fa-lock text-emerald-500 mr-1.5"></i> Protected Code Viewer Active</span>
+                <button onclick="closeInspectorModal()" class="bg-custom-inset hover:bg-slate-300 dark:hover:bg-slate-800 text-custom-primary px-4 py-1.5 rounded-xl border border-custom font-semibold">Close Inspector</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-custom-card border border-custom px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
+        <span id="toastMsg" class="text-sm text-custom-primary font-medium">Notification message</span>
+    </div>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        // ==========================================
+        // 1. DATA CATEGORIES & DATA GENERATOR (20+ Scenarios Per Category)
+        // ==========================================
+        const TECH_CATEGORIES = [
+            { id: 'pyspark', name: 'PySpark Core & Spark SQL', icon: 'fa-fire', color: 'text-orange-500' },
+            { id: 'python', name: 'Python for Data Engineering', icon: 'fa-brands fa-python', color: 'text-yellow-500' },
+            { id: 'etl', name: 'Data Engineering & ETL Pipelines', icon: 'fa-diagram-project', color: 'text-cyan-500' },
+            { id: 'azure', name: 'Azure Data Stack (ADF/Synapse)', icon: 'fa-brands fa-microsoft', color: 'text-blue-500' },
+            { id: 'aws', name: 'AWS Big Data (S3/Glue/EMR)', icon: 'fa-brands fa-aws', color: 'text-amber-500' },
+            { id: 'gcp', name: 'GCP Data (BigQuery/Dataflow)', icon: 'fa-brands fa-google', color: 'text-rose-500' },
+            { id: 'redis', name: 'Redis & Caching Architecture', icon: 'fa-bolt', color: 'text-red-500' },
+            { id: 'snowflake', name: 'Snowflake Data Cloud', icon: 'fa-snowflake', color: 'text-sky-400' },
+            { id: 'databricks', name: 'Databricks & Delta Lake', icon: 'fa-cubes', color: 'text-orange-600' },
+            { id: 'sql', name: 'SQL & Data Modeling', icon: 'fa-database', color: 'text-indigo-400' },
+            { id: 'kafka', name: 'Kafka & Event Streaming', icon: 'fa-stream', color: 'text-emerald-400' }
+        ];
+
+        const COMPANY_CATEGORIES = [
+            { id: 'accenture', name: 'Accenture Interview Sets', icon: 'fa-building', color: 'text-purple-400' },
+            { id: 'tcs', name: 'TCS Real-Time Scenarios', icon: 'fa-briefcase', color: 'text-blue-400' },
+            { id: 'cts', name: 'CTS (Cognizant) Rounds', icon: 'fa-network-wired', color: 'text-indigo-400' },
+            { id: 'capgemini', name: 'Capgemini Questions', icon: 'fa-landmark', color: 'text-teal-500' },
+            { id: 'amazon', name: 'Amazon DE Scenarios', icon: 'fa-brands fa-amazon', color: 'text-amber-500' },
+            { id: 'meta', name: 'Meta Data Infrastructure', icon: 'fa-brands fa-meta', color: 'text-blue-600' },
+            { id: 'uber', name: 'Uber Streaming & Maps', icon: 'fa-car', color: 'text-emerald-400' },
+            { id: 'netflix', name: 'Netflix High Scale DE', icon: 'fa-tv', color: 'text-rose-600' },
+            { id: 'google', name: 'Google Data Platform', icon: 'fa-brands fa-google', color: 'text-yellow-400' },
+            { id: 'microsoft', name: 'Microsoft Enterprise DE', icon: 'fa-brands fa-windows', color: 'text-sky-500' }
+        ];
+
+        const ALL_QUESTIONS = [];
+
+        function buildDataset() {
+            let globalId = 1;
+
+            // Generate 20 Scenarios per Tech Category
+            TECH_CATEGORIES.forEach(cat => {
+                for (let i = 1; i <= 20; i++) {
+                    ALL_QUESTIONS.push(generateTechScenario(cat, i, globalId++));
+                }
+            });
+
+            // Generate 20 Scenarios per Company Category
+            COMPANY_CATEGORIES.forEach(comp => {
+                for (let i = 1; i <= 20; i++) {
+                    ALL_QUESTIONS.push(generateCompanyScenario(comp, i, globalId++));
+                }
+            });
+        }
+
+        function generateTechScenario(cat, idx, id) {
+            const difficulties = ['Easy', 'Medium', 'Hard', 'Expert'];
+            const diff = difficulties[(idx - 1) % 4];
+
+            const customScenarios = {
+                pyspark: [
+                    {
+                        title: "Handling Extreme Data Skew in 10TB Join Operations",
+                        scale: "10TB daily incremental stream",
+                        context: "Your PySpark job joins a 10TB clickstream table with a 50MB customer demographics dataset. Executor #4 experiences OutOfMemory (OOM) errors while other nodes stay idle.",
+                        logic: "1. Root Cause: Key skew causing shuffled data to concentrate unevenly on a single partition.\n2. Fix: Use broadcast join `broadcast(dim_df)` to eliminate shuffle stages completely across the cluster.\n3. Salting Option: If both tables are large, append random salt integers (0..N) to key columns.",
+                        code: `from pyspark.sql.functions import broadcast, col\n\n# Optimized Broadcast Join\nclicks_df = spark.read.format("delta").load("s3://lake/clicks")\nusers_df = spark.read.format("parquet").load("s3://lake/users")\n\n# Broadcast smaller dataframe to avoid shuffle OOM\njoined_df = clicks_df.join(broadcast(users_df), on="user_id", how="inner")\njoined_df.write.mode("append").format("delta").save("s3://lake/gold")`
+                    },
+                    {
+                        title: "Resolving Small File Problem in PySpark Streaming S3 Sinks",
+                        scale: "500,000 files/hour generated in S3 bucket",
+                        context: "A PySpark streaming pipeline writes micro-batches every 10 seconds to S3, producing millions of 5KB files that stall downstream Athena queries.",
+                        logic: "1. Implement Auto-Compaction or Trigger `OPTIMIZE` commands in Delta Lake.\n2. Adjust `spark.sql.shuffle.partitions` dynamically based on micro-batch input sizing.\n3. Use `coalesce(N)` before writing if operating in plain Parquet format.",
+                        code: `# Compact Delta Lake table periodically\nfrom delta.tables import DeltaTable\n\ndeltaTable = DeltaTable.forPath(spark, "s3://lake/events")\ndeltaTable.optimize().executeZOrder("event_type", "created_date")\n\n# Streaming write with target file size config\nstream_df.writeStream \\\n  .format("delta") \\\n  .option("checkpointLocation", "/checkpoints/events") \\\n  .option("delta.targetFileSize", "128mb") \\\n  .start("s3://lake/events")`
+                    }
+                ],
+                python: [
+                    {
+                        title: "Memory-Safe Streaming Ingestion of 80GB Unstructured JSON Logs",
+                        scale: "80GB raw JSON logs on a 16GB RAM instance",
+                        context: "Write a memory-safe Python pipeline to parse and extract operational metrics from an 80GB raw JSON log without triggering OS memory thrashing.",
+                        logic: "1. Avoid `json.load()` as it attempts to load full payload into system RAM.\n2. Utilize `ijson` library for iterative streaming parsing over stream iterators.\n3. Batch parsed records into 10,000 row chunks for downstream DB ingestion.",
+                        code: `import ijson\n\ndef stream_large_json(file_path):\n    with open(file_path, 'rb') as f:\n        # Lazily iterate over JSON items array\n        parser = ijson.items(f, 'item')\n        for record in parser:\n            yield {\n                'event_id': record['id'],\n                'timestamp': record['ts'],\n                'metric': record.get('val', 0)\n            }\n\n# Process chunked generator\nfor row in stream_large_json("massive_logs.json"):\n    process_to_db(row)`
+                    }
+                ]
+            };
+
+            const specific = customScenarios[cat.id] && customScenarios[cat.id][(idx - 1) % customScenarios[cat.id].length];
+
+            return {
+                id: id,
+                catId: cat.id,
+                categoryName: cat.name,
+                title: specific ? specific.title : `${cat.name}: Production Scenario #${idx} - High Scale Optimization`,
+                scale: specific ? specific.scale : `${idx * 150}GB daily payload`,
+                difficulty: diff,
+                context: specific ? specific.context : `Under peak processing loads in ${cat.name}, latency exceeded the SLA threshold during stage #${idx}. Architect an optimized strategy to lower cost and eliminate execution bottlenecks.`,
+                solutionLogic: specific ? specific.logic : `1. Analyze execution plans and pinpoint memory spillage or shuffle overhead.\n2. Apply horizontal partitioning, indexed Z-Ordering, or async memory pooling.\n3. Implement batch aggregation write buffers.`,
+                codeSnippet: specific ? specific.code : `-- High Performance Execution Script #${idx}\nSELECT \n    date_trunc('day', event_time) AS event_day,\n    category_id,\n    COUNT(DISTINCT user_id) AS active_users,\n    SUM(revenue) AS total_revenue\nFROM data_lake.fact_transactions\nWHERE event_time >= CURRENT_DATE - INTERVAL '30' DAY\nGROUP BY 1, 2\nHAVING SUM(revenue) > 5000;`,
+                companyTag: 'Enterprise Standard'
+            };
+        }
+
+        function generateCompanyScenario(comp, idx, id) {
+            const difficulties = ['Medium', 'Hard', 'Expert', 'Hard'];
+            const diff = difficulties[(idx - 1) % 4];
+            const roundNum = ((idx - 1) % 3) + 1;
+
+            return {
+                id: id,
+                catId: comp.id,
+                categoryName: `${comp.name} (Round ${roundNum})`,
+                title: `${comp.name} Real Question #${idx}: Fault Tolerance & Exactly-Once Delivery`,
+                scale: "Multi-region sync scenario",
+                difficulty: diff,
+                context: `During an interview round for ${comp.name}, the panel asks: How do you guarantee exact-once processing semantics when replicating CDC events from PostgreSQL to Cloud Data Warehouses during temporary cloud outages?`,
+                solutionLogic: `1. Capture WAL changes via Debezium into Apache Kafka with idempotent producers.\n2. Implement Kafka Connect with staged target tables.\n3. Apply MERGE upsert commands using transaction sequence IDs.`,
+                codeSnippet: `/* Deduplicated MERGE Upsert Pattern */\nMERGE INTO target_dw.orders AS T\nUSING (\n  SELECT * FROM (\n    SELECT *,\n           ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY cdc_updated_at DESC) as rn\n    FROM staging_dw.stg_orders\n  ) WHERE rn = 1\n) AS S\nON T.order_id = S.order_id\nWHEN MATCHED AND S.cdc_action = 'UPDATE' THEN\n  UPDATE SET T.status = S.status, T.amount = S.amount, T.updated_at = S.cdc_updated_at\nWHEN NOT MATCHED AND S.cdc_action = 'INSERT' THEN\n  INSERT (order_id, customer_id, status, amount, updated_at)\n  VALUES (S.order_id, S.customer_id, S.status, S.amount, S.cdc_updated_at);`,
+                companyTag: comp.name
+            };
+        }
+
+        // ==========================================
+        // 2. STATE & STORAGE MANAGEMENT
+        // ==========================================
+        let state = {
+            theme: localStorage.getItem('de_theme') || 'dark',
+            sidebarOpen: true,
+            activeCategory: 'all',
+            difficultyFilter: 'ALL',
+            searchQuery: '',
+            bookmarks: new Set(JSON.parse(localStorage.getItem('de_bookmarks') || '[]')),
+            mastered: new Set(JSON.parse(localStorage.getItem('de_mastered') || '[]')),
+            expandedSolutions: new Set()
+        };
+
+        function applyTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            if (state.theme === 'dark') {
+                html.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                html.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-moon text-indigo-600';
+            }
+            localStorage.setItem('de_theme', state.theme);
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme();
+            showToast(`Theme set to ${state.theme.toUpperCase()} mode`, "info");
+        }
+
+        function toggleSidebar() {
+            const appLayout = document.getElementById('app-layout');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isMobile = window.innerWidth < 1024;
+
+            if (isMobile) {
+                const isHidden = sidebar.classList.contains('-translate-x-full');
+                if (isHidden) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            } else {
+                appLayout.classList.toggle('sidebar-collapsed');
+                state.sidebarOpen = !appLayout.classList.contains('sidebar-collapsed');
+            }
+        }
+
+        // ==========================================
+        // 3. CLIENT-SIDE SOURCE VIEWING PROTECTION
+        // ==========================================
+        function initSourceProtection() {
+            // Disable context menu
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showToast("Source protection active. Context menu disabled.", "warning");
+                return false;
+            });
+
+            // Intercept developer keys
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+U or Cmd+U (View Source)
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') {
+                    e.preventDefault();
+                    showToast("View Source is disabled on this portal.", "warning");
+                    return false;
+                }
+
+                // F12 (DevTools)
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    showToast("Developer Console access restricted.", "warning");
+                    return false;
+                }
+
+                // Ctrl+Shift+I / J / C or Cmd+Option+I / J / C (Inspect / Console / Selector)
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase())) {
+                    e.preventDefault();
+                    showToast("Inspect element is protected.", "warning");
+                    return false;
+                }
+
+                // Ctrl+S / Cmd+S (Save Page)
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                    e.preventDefault();
+                    showToast("Page saving is restricted.", "warning");
+                    return false;
+                }
+            });
+        }
+
+        // ==========================================
+        // 4. RENDER ENGINE & UI CONTROLLERS
+        // ==========================================
+        function initApp() {
+            buildDataset();
+            applyTheme();
+            initSourceProtection();
+            renderSidebar();
+            renderScenarios();
+            updateStatsUI();
+            setupEventListeners();
+            populateInspectorOptions();
+        }
+
+        function renderSidebar(catFilter = '') {
+            const techListEl = document.getElementById('techCategoriesList');
+            const compListEl = document.getElementById('companyCategoriesList');
+            const term = catFilter.toLowerCase();
+
+            techListEl.innerHTML = TECH_CATEGORIES
+                .filter(cat => cat.name.toLowerCase().includes(term))
+                .map(cat => {
+                    const count = ALL_QUESTIONS.filter(q => q.catId === cat.id).length;
+                    return `
+                        <button onclick="filterByCategory('${cat.id}')" id="cat-btn-${cat.id}" 
+                            class="sidebar-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-custom-secondary hover:bg-custom-inset transition-all">
+                            <span class="flex items-center space-x-2.5 truncate">
+                                <i class="fa-solid ${cat.icon} ${cat.color} w-4 text-center"></i>
+                                <span class="truncate">${cat.name}</span>
+                            </span>
+                            <span class="bg-custom-inset text-custom-secondary px-2 py-0.5 rounded-full text-xs font-mono font-bold">${count}</span>
+                        </button>
+                    `;
+                }).join('');
+
+            compListEl.innerHTML = COMPANY_CATEGORIES
+                .filter(comp => comp.name.toLowerCase().includes(term))
+                .map(comp => {
+                    const count = ALL_QUESTIONS.filter(q => q.catId === comp.id).length;
+                    return `
+                        <button onclick="filterByCategory('${comp.id}')" id="cat-btn-${comp.id}" 
+                            class="sidebar-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-custom-secondary hover:bg-custom-inset transition-all">
+                            <span class="flex items-center space-x-2.5 truncate">
+                                <i class="fa-solid ${comp.icon} ${comp.color} w-4 text-center"></i>
+                                <span class="truncate">${comp.name}</span>
+                            </span>
+                            <span class="bg-custom-inset text-custom-secondary px-2 py-0.5 rounded-full text-xs font-mono font-bold">${count}</span>
+                        </button>
+                    `;
+                }).join('');
+
+            updateSidebarStyles();
+        }
+
+        function filterSidebarCategories(val) {
+            renderSidebar(val);
+        }
+
+        function renderScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            let filtered = ALL_QUESTIONS.filter(q => {
+                if (state.activeCategory === 'bookmarked') {
+                    if (!state.bookmarks.has(q.id)) return false;
+                } else if (state.activeCategory === 'mastered') {
+                    if (!state.mastered.has(q.id)) return false;
+                } else if (state.activeCategory !== 'all') {
+                    if (q.catId !== state.activeCategory) return false;
+                }
+
+                if (state.difficultyFilter !== 'ALL' && q.difficulty !== state.difficultyFilter) {
+                    return false;
+                }
+
+                if (state.searchQuery.trim() !== '') {
+                    const query = state.searchQuery.toLowerCase();
+                    return q.title.toLowerCase().includes(query) ||
+                           q.context.toLowerCase().includes(query) ||
+                           q.categoryName.toLowerCase().includes(query);
+                }
+
+                return true;
+            });
+
+            document.getElementById('visibleCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = filtered.map(q => {
+                const isBookmarked = state.bookmarks.has(q.id);
+                const isMastered = state.mastered.has(q.id);
+                const isSolutionVisible = state.expandedSolutions.has(q.id);
+
+                let diffBadgeColor = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30';
+                if (q.difficulty === 'Medium') diffBadgeColor = 'bg-amber-500/10 text-amber-500 border-amber-500/30';
+                if (q.difficulty === 'Hard') diffBadgeColor = 'bg-rose-500/10 text-rose-500 border-rose-500/30';
+                if (q.difficulty === 'Expert') diffBadgeColor = 'bg-purple-500/10 text-purple-500 border-purple-500/30';
+
+                return `
+                    <div id="scenario-card-${q.id}" class="bg-custom-card border ${isMastered ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-custom'} rounded-2xl p-5 sm:p-6 shadow-sm transition-all hover:border-slate-400 dark:hover:border-slate-600">
+                        
+                        <!-- Top Metadata -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-lg border ${diffBadgeColor}">${q.difficulty}</span>
+                                <span class="text-xs font-semibold text-custom-secondary bg-custom-inset px-2.5 py-0.5 rounded-lg border border-custom">${q.categoryName}</span>
+                                <span class="text-xs text-slate-400 font-mono hidden sm:inline"><i class="fa-solid fa-server mr-1"></i>${q.scale}</span>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleMastered(${q.id})" class="p-2 rounded-xl text-xs font-semibold border transition-all ${isMastered ? 'bg-emerald-500/20 text-emerald-500 border-emerald-500/40' : 'bg-custom-inset text-custom-secondary border-custom hover:text-custom-primary'}">
+                                    <i class="fa-solid ${isMastered ? 'fa-circle-check' : 'fa-check'} mr-1"></i>
+                                    <span>${isMastered ? 'Completed' : 'Mark Completed'}</span>
+                                </button>
+                                <button onclick="toggleBookmark(${q.id})" class="p-2 rounded-xl text-xs border transition-all ${isBookmarked ? 'bg-amber-500/20 text-amber-500 border-amber-500/40' : 'bg-custom-inset text-custom-secondary border-custom hover:text-custom-primary'}">
+                                    <i class="fa-solid fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Scenario Title -->
+                        <h3 class="text-base sm:text-lg font-extrabold text-custom-primary mb-2 leading-snug">${q.title}</h3>
+
+                        <!-- Scenario Context -->
+                        <div class="bg-custom-inset border border-custom rounded-xl p-4 mb-4 text-xs sm:text-sm text-custom-primary leading-relaxed">
+                            <div class="flex items-start space-x-2.5">
+                                <i class="fa-solid fa-circle-question text-cyan-500 mt-0.5 text-base"></i>
+                                <div>
+                                    <strong class="font-bold text-custom-primary block mb-1">Scenario Context:</strong>
+                                    ${q.context}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reveal Control Bar -->
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="toggleSolution(${q.id})" class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-500 border border-cyan-500/30 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center space-x-2">
+                                <i class="fa-solid ${isSolutionVisible ? 'fa-eye-slash' : 'fa-lightbulb'}"></i>
+                                <span>${isSolutionVisible ? 'Hide Solution' : 'Reveal Solution'}</span>
+                            </button>
+                            
+                            <button onclick="openInspectorWithId(${q.id})" class="text-xs text-cyan-500 hover:underline font-mono">
+                                <i class="fa-solid fa-code mr-1"></i>Inspect Script
+                            </button>
+                        </div>
+
+                        <!-- Solution Content Drawer -->
+                        <div id="solution-box-${q.id}" class="${isSolutionVisible ? 'block' : 'hidden'} mt-5 pt-5 border-t border-custom space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-brain text-purple-500"></i>
+                                    <span>System Architecture & Step-by-Step Logic</span>
+                                </h4>
+                                <div class="bg-custom-inset rounded-xl p-4 border border-custom text-xs sm:text-sm text-custom-primary font-sans whitespace-pre-line leading-relaxed">
+${q.solutionLogic}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-code text-emerald-500"></i>
+                                        <span>Production Implementation Code</span>
+                                    </h4>
+                                    <button onclick="copyCode(this, \`${q.codeSnippet.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="text-xs bg-custom-inset hover:bg-slate-200 dark:hover:bg-slate-700 text-custom-primary px-3 py-1 rounded-lg border border-custom flex items-center space-x-1 transition-all font-semibold">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Code</span>
+                                    </button>
+                                </div>
+                                <div class="relative bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs sm:text-sm text-cyan-300 overflow-x-auto shadow-inner">
+                                    <pre><code class="selectable">${escapeHtml(q.codeSnippet)}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 5. IN-APP CODE INSPECTOR MODAL WIDGET
+        // ==========================================
+        function populateInspectorOptions() {
+            const select = document.getElementById('inspectorSelect');
+            select.innerHTML = ALL_QUESTIONS.map(q => `
+                <option value="${q.id}">[#DE-${q.id}] ${q.categoryName} - ${q.title}</option>
+            `).join('');
+        }
+
+        function openInspectorModal() {
+            document.getElementById('codeInspectorModal').classList.remove('hidden');
+            const currentVal = document.getElementById('inspectorSelect').value;
+            if (currentVal) loadInspectorScript(currentVal);
+        }
+
+        function openInspectorWithId(id) {
+            document.getElementById('inspectorSelect').value = id;
+            loadInspectorScript(id);
+            openInspectorModal();
+        }
+
+        function closeInspectorModal() {
+            document.getElementById('codeInspectorModal').classList.add('hidden');
+        }
+
+        function loadInspectorScript(id) {
+            const q = ALL_QUESTIONS.find(item => item.id == id);
+            if (!q) return;
+            document.getElementById('inspectorCodeContent').textContent = q.codeSnippet;
+            document.getElementById('inspectorLangBadge').innerHTML = `<i class="fa-solid fa-code mr-1"></i> ${q.categoryName} (#DE-${q.id})`;
+        }
+
+        function copyInspectorCode() {
+            const code = document.getElementById('inspectorCodeContent').textContent;
+            const temp = document.createElement('textarea');
+            temp.value = code;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showToast("Inspector code copied to clipboard!", "success");
+        }
+
+        // ==========================================
+        // 6. ACTION HANDLERS & NAVIGATION
+        // ==========================================
+        function filterByCategory(catId) {
+            state.activeCategory = catId;
+            updateCategoryHeader();
+            updateSidebarStyles();
+            renderScenarios();
+            
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+        }
+
+        function filterBySpecial(type) {
+            state.activeCategory = type;
+            updateCategoryHeader();
+            updateSidebarStyles();
+            renderScenarios();
+
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
+        }
+
+        function setDifficultyFilter(diff) {
+            state.difficultyFilter = diff;
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.className = "diff-btn px-3 py-1 rounded-lg text-xs font-bold text-custom-secondary hover:bg-custom-card transition-all";
+            });
+            const activeBtn = document.getElementById(`diff-${diff}`);
+            if (activeBtn) {
+                activeBtn.className = "diff-btn active px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500/20 text-cyan-500 border border-cyan-500/30 transition-all";
+            }
+            renderScenarios();
+        }
+
+        function updateCategoryHeader() {
+            const titleEl = document.getElementById('activeCategoryTitle');
+            const descEl = document.getElementById('activeCategoryDesc');
+            const iconEl = document.getElementById('activeCategoryIcon');
+
+            if (state.activeCategory === 'all') {
+                titleEl.textContent = "All Scenario Questions";
+                descEl.textContent = "Real-time production scenarios with complete logic and code solutions.";
+                iconEl.innerHTML = `<i class="fa-solid fa-layer-group"></i>`;
+            } else if (state.activeCategory === 'bookmarked') {
+                titleEl.textContent = "Bookmarked Scenarios";
+                descEl.textContent = "Saved questions for quick reference and future revision.";
+                iconEl.innerHTML = `<i class="fa-solid fa-bookmark text-amber-500"></i>`;
+            } else if (state.activeCategory === 'mastered') {
+                titleEl.textContent = "Mastered Scenarios";
+                descEl.textContent = "Questions you have completed and mastered.";
+                iconEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+            } else {
+                const tech = TECH_CATEGORIES.find(c => c.id === state.activeCategory);
+                const comp = COMPANY_CATEGORIES.find(c => c.id === state.activeCategory);
+                const match = tech || comp;
+                if (match) {
+                    titleEl.textContent = match.name;
+                    descEl.textContent = `Targeted ${match.name} scenario questions covering high-scale architecture and code solutions.`;
+                    iconEl.innerHTML = `<i class="fa-solid ${match.icon} ${match.color}"></i>`;
+                }
+            }
+        }
+
+        function updateSidebarStyles() {
+            document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                btn.classList.remove('bg-custom-inset', 'text-custom-primary', 'border-l-4', 'border-cyan-500');
+                btn.classList.add('text-custom-secondary');
+            });
+
+            const activeBtn = document.getElementById(`cat-btn-${state.activeCategory}`) || document.getElementById(`filter-${state.activeCategory}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-custom-secondary');
+                activeBtn.classList.add('bg-custom-inset', 'text-custom-primary', 'border-l-4', 'border-cyan-500');
+            }
+        }
+
+        function toggleBookmark(id) {
+            if (state.bookmarks.has(id)) {
+                state.bookmarks.delete(id);
+                showToast("Removed from Bookmarks", "info");
+            } else {
+                state.bookmarks.add(id);
+                showToast("Added to Bookmarks", "success");
+            }
+            localStorage.setItem('de_bookmarks', JSON.stringify([...state.bookmarks]));
+            updateStatsUI();
+            renderScenarios();
+        }
+
+        function toggleMastered(id) {
+            if (state.mastered.has(id)) {
+                state.mastered.delete(id);
+                showToast("Marked as Uncompleted", "info");
+            } else {
+                state.mastered.add(id);
+                showToast("Marked as Mastered!", "success");
+            }
+            localStorage.setItem('de_mastered', JSON.stringify([...state.mastered]));
+            updateStatsUI();
+            renderScenarios();
+        }
+
+        function toggleSolution(id) {
+            if (state.expandedSolutions.has(id)) {
+                state.expandedSolutions.delete(id);
+            } else {
+                state.expandedSolutions.add(id);
+            }
+            renderScenarios();
+        }
+
+        function updateStatsUI() {
+            const masteredCount = state.mastered.size;
+            const bookmarkCount = state.bookmarks.size;
+            const total = ALL_QUESTIONS.length;
+            const percent = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+
+            document.getElementById('headerMasteredCount').textContent = masteredCount;
+            document.getElementById('headerBookmarkCount').textContent = bookmarkCount;
+            document.getElementById('badge-mastered-count').textContent = masteredCount;
+            document.getElementById('badge-bookmark-count').textContent = bookmarkCount;
+            document.getElementById('badge-all-count').textContent = total;
+
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function resetFilters() {
+            state.activeCategory = 'all';
+            state.difficultyFilter = 'ALL';
+            state.searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            setDifficultyFilter('ALL');
+            updateCategoryHeader();
+            updateSidebarStyles();
+            renderScenarios();
+        }
+
+        function copyCode(btn, code) {
+            const temp = document.createElement('textarea');
+            temp.value = code;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            const origText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-500"></i><span>Copied!</span>`;
+            setTimeout(() => { btn.innerHTML = origText; }, 2000);
+            showToast("Code copied to clipboard!", "success");
+        }
+
+        function clearSearchInput() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            document.getElementById('clearSearch').classList.add('hidden');
+            state.searchQuery = '';
+            renderScenarios();
+        }
+
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = msg;
+            if (type === "success") {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-500 text-lg";
+            } else if (type === "warning") {
+                toastIcon.className = "fa-solid fa-shield-halved text-amber-500 text-lg";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-info text-cyan-500 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function openModal() { document.getElementById('newsletterModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('newsletterModal').classList.add('hidden'); }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const exp = document.getElementById('regExp').value;
+            const tech = document.getElementById('regTech').value;
+
+            const subscriber = { name, email, exp, tech, date: new Date().toISOString() };
+            const existing = JSON.parse(localStorage.getItem('de_subscribers') || '[]');
+            existing.push(subscriber);
+            localStorage.setItem('de_subscribers', JSON.stringify(existing));
+
+            closeModal();
+            showToast(`Registration completed for ${name}!`, "success");
+            e.target.reset();
+        }
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const clearSearch = document.getElementById('clearSearch');
+
+            function handleSearch(val) {
+                state.searchQuery = val;
+                if (val.trim() !== '') {
+                    clearSearch.classList.remove('hidden');
+                } else {
+                    clearSearch.classList.add('hidden');
+                }
+                renderScenarios();
+            }
+
+            searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+            mobileSearchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                    e.preventDefault();
+                    toggleSidebar();
+                }
+            });
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
